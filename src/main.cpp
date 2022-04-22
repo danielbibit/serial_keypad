@@ -1,9 +1,17 @@
 #include "Arduino.h"
 #include "Keyboard.h"
 
+#define DEBOUNCE_TIME 500
+
 String buffer;
 String command;
 String argument;
+
+// 16 14 15
+// 6 7 8
+
+unsigned int input_switches [] = {16, 14, 15, 6, 7, 8, };
+unsigned long debounce_switches[6];
 
 unsigned long parse_time;
 
@@ -43,6 +51,11 @@ bool parse_serial_command(){
 
 
 void setup() {
+    for (unsigned int i = 0; i<6; i++){
+        pinMode(input_switches[i], INPUT_PULLUP);
+        debounce_switches[i] = 0;
+    }
+
     // open the serial port:
     Serial.begin(9600);
 
@@ -58,7 +71,18 @@ void setup() {
 }
 
 void loop() {
-    // check for incoming serial data:
+
+    for(unsigned int i = 0; i<6; i++){
+        if(digitalRead(input_switches[i]) == LOW){
+            if(millis() - debounce_switches[i] > DEBOUNCE_TIME){
+                debounce_switches[i] = millis();
+
+                 Keyboard.print("hello");
+            }
+        }
+    }
+
+
     if(Serial.available() > 0) {
         buffer = Serial.readStringUntil('\n');
 
