@@ -7,13 +7,30 @@ String buffer;
 String command;
 String argument;
 
+// Switch -> pins
 // 16 14 15
 // 6 7 8
 
-unsigned int input_switches [] = {16, 14, 15, 6, 7, 8, };
+//Switch -> n
+// 0 1 2
+// 3 4 5
+
+const int switch_keys[] = {KEY_F13, KEY_F14, KEY_F15, KEY_F16, KEY_F17, KEY_F18};
+
+const unsigned int input_switches [] = {16, 14, 15, 6, 7, 8};
+
 unsigned long debounce_switches[6];
 
-unsigned long parse_time;
+void f0(){
+    Keyboard.press(KEY_LEFT_GUI);
+    delay(200);
+    Keyboard.write('p');
+    delay(200);
+    Keyboard.write('p');
+    delay(200);
+    Keyboard.releaseAll();
+    Keyboard.write(KEY_ESC);
+}
 
 void clear_parsed_commands(){
     command.remove(0);
@@ -77,7 +94,29 @@ void loop() {
             if(millis() - debounce_switches[i] > DEBOUNCE_TIME){
                 debounce_switches[i] = millis();
 
-                 Keyboard.print("hello");
+                switch (i){
+                    case 0:
+                        f0();
+                        break;
+
+                    case 1:
+                        break;
+
+                    case 2:
+                        break;
+
+                    case 3:
+                        break;
+
+                    case 4:
+                        break;
+
+                    case 5:
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }
