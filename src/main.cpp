@@ -1,7 +1,7 @@
 #include "Arduino.h"
-#include "Keyboard.h"
+#include "HID-Project.h"
 
-#define DEBOUNCE_TIME 500
+#define DEBOUNCE_TIME 150
 
 String buffer;
 String command;
@@ -11,16 +11,24 @@ String argument;
 // 16 14 15
 // 6 7 8
 
-//Switch -> n
+//Switch -> logical map
 // 0 1 2
 // 3 4 5
 
-const int switch_keys[] = {KEY_F13, KEY_F14, KEY_F15, KEY_F16, KEY_F17, KEY_F18};
+const int switch_keys[] = {
+    KEY_F13,
+    KEY_F14,
+    KEY_F15,
+    KEY_F16,
+    KEY_F17,
+    KEY_F18,
+};
 
 const unsigned int input_switches [] = {16, 14, 15, 6, 7, 8};
 
 unsigned long debounce_switches[6];
 
+// Switch between monitors
 void f0(){
     Keyboard.press(KEY_LEFT_GUI);
     delay(200);
@@ -76,7 +84,7 @@ void setup() {
     // open the serial port:
     Serial.begin(9600);
 
-    while(!Serial){}
+    // while(!Serial){}
 
     Serial.println("Keyboard Start");
 
@@ -84,7 +92,9 @@ void setup() {
     Serial.setTimeout(100);
 
     // initialize control over the keyboard:
-    Keyboard.begin();
+    BootKeyboard.begin();
+
+    Consumer.begin();
 }
 
 void loop() {
@@ -96,22 +106,26 @@ void loop() {
 
                 switch (i){
                     case 0:
-                        f0();
+                        // f0();
                         break;
 
                     case 1:
+                        BootKeyboard.write(KEY_PRINTSCREEN);
                         break;
 
                     case 2:
+                        Consumer.write(MEDIA_VOLUME_UP);
                         break;
 
                     case 3:
                         break;
 
                     case 4:
+                        Consumer.write(MEDIA_VOL_MUTE);
                         break;
 
                     case 5:
+                        Consumer.write(MEDIA_VOLUME_DOWN);
                         break;
 
                     default:
