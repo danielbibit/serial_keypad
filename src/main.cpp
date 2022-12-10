@@ -2,7 +2,8 @@
 #include "HID-Project.h"
 
 #define DEBOUNCE_TIME 30
-#define SINGLE_PRESS_DEBOUNCE_TIME 200
+#define KEY_REPEAT_RATE 30
+#define KEY_DELAY 200
 
 String buffer;
 String command;
@@ -107,7 +108,7 @@ void process_key_pressed(int key_index){
 
     // PRESSED -> HOLDING
     } else if(key_statuses[key_index] == PRESSED){
-        if(millis() - key_debounce_time[key_index] > SINGLE_PRESS_DEBOUNCE_TIME){
+        if(millis() - key_debounce_time[key_index] > KEY_DELAY){
             key_statuses[key_index] = HOLDING;
             key_debounce_time[key_index] = millis();
 
@@ -118,7 +119,7 @@ void process_key_pressed(int key_index){
 
     // HOLDING -> HOLDING
     } else if(key_statuses[key_index] == HOLDING){
-        if(millis() -  key_debounce_time[key_index] > DEBOUNCE_TIME){
+        if(millis() -  key_debounce_time[key_index] > KEY_REPEAT_RATE){
             key_debounce_time[key_index] = millis();
 
             switch_action(key_index);
