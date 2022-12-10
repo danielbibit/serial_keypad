@@ -29,6 +29,15 @@ unsigned long key_pressed_time[6];
 
 status key_statuses[6];
 
+typedef void (* GenericFP)(void);
+
+GenericFP user_macros[6];
+
+KeyboardKeycode keyboard_keys[6];
+ConsumerKeycode media_keys[6];
+
+
+// User defined macros
 void user_func_switch_monitors(){
     BootKeyboard.press(KEY_LEFT_GUI);
     delay(200);
@@ -60,14 +69,7 @@ void user_func_mute_mic(){
     BootKeyboard.releaseAll();
 }
 
-
-typedef void (* GenericFP)(void);
-
-GenericFP user_macros[6];
-
-KeyboardKeycode keyboard_keys[6];
-ConsumerKeycode media_keys[6];
-
+// Setup keys
 void setup_user_keys(){
     user_macros[0] = user_func_switch_audio_output;
     keyboard_keys[1] = KEY_PRINTSCREEN;
@@ -77,6 +79,7 @@ void setup_user_keys(){
     media_keys[5] = MEDIA_VOLUME_DOWN;
 }
 
+// Handles keypress
 void switch_action(int i){
     // Serial.println("Action!");
 
@@ -132,11 +135,11 @@ void process_key_release(int key_index){
     // Consumer.releaseAll();
 }
 
+// Serial Functions
 void clear_parsed_commands(){
     command.remove(0);
     argument.remove(0);
 }
-
 
 bool parse_serial_command(){
     clear_parsed_commands();
@@ -168,7 +171,6 @@ bool parse_serial_command(){
 }
 
 
-
 void setup() {
     for (unsigned int i = 0; i<6; i++){
         pinMode(input_switches[i], INPUT_PULLUP);
@@ -194,7 +196,6 @@ void setup() {
 
     Consumer.begin();
 }
-
 
 void loop() {
     for(unsigned int i = 0; i<6; i++){
