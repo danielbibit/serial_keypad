@@ -213,7 +213,11 @@ void loop() {
 
         if(parse_serial_command()){
             if(command == "write"){
-                BootKeyboard.write(argument.toInt());
+                if(argument == "ENTER"){
+                    BootKeyboard.write(KEY_ENTER);
+                }else if(argument == "KEY_UP"){
+                    BootKeyboard.write(KEY_UP);
+                }
 
             }else if(command == "print"){
                 BootKeyboard.print(argument);
