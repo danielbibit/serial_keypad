@@ -205,7 +205,6 @@ void loop() {
         }else{
             process_key_release(i);
         }
-
     }
 
     if(Serial.available() > 0) {
