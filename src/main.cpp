@@ -5,9 +5,11 @@
 #define KEY_REPEAT_RATE 30
 #define KEY_DELAY 200
 
-String buffer;
-String command;
-String argument;
+// #define BUFFER_SIZE 50
+#define BUFFER_SIZE 50
+char buffer_cstr[BUFFER_SIZE];
+char command_cstr[BUFFER_SIZE];
+char argument_cstr[BUFFER_SIZE];
 
 // Switch -> pins
 // 16 14 15
@@ -138,8 +140,8 @@ void process_key_release(int key_index){
 
 // Serial Functions
 void clear_parsed_commands(){
-    command.remove(0);
-    argument.remove(0);
+    command_cstr[0] = '\0';
+    argument_cstr[0] = '\0';
 }
 
 bool parse_serial_command(){
@@ -147,15 +149,15 @@ bool parse_serial_command(){
 
     bool separator_found = false;
 
-    for(unsigned int i = 0; i < buffer.length(); i++ ){
-        if(buffer[i] == ':'){
+    for(unsigned int i = 0; i < strlen(buffer_cstr); i++ ){
+        if(buffer_cstr[i] == ':'){
             separator_found = true;
 
         }else if(!separator_found){
-            command += buffer[i];
+            strncat(command_cstr, &buffer_cstr[i], 1);
 
         }else{
-            argument += buffer[i];
+            strncat(argument_cstr, &buffer_cstr[i], 1);
 
         }
     }
@@ -166,11 +168,8 @@ bool parse_serial_command(){
         return false;
     }
 
-    buffer.remove(0);
-
     return true;
 }
-
 
 void setup() {
     for (unsigned int i = 0; i<6; i++){
@@ -208,20 +207,20 @@ void loop() {
     }
 
     if(Serial.available() > 0) {
-        buffer = Serial.readStringUntil('\n');
+        memset(buffer_cstr, 0, BUFFER_SIZE);
+        Serial.readBytesUntil('\n', buffer_cstr, BUFFER_SIZE);
+        Serial.flush();
 
         if(parse_serial_command()){
-            if(command == "write"){
-                // TODO VERIFY WHY IT WRITES ASCII CHARACTERS
-                BootKeyboard.write(argument.toInt());
-
-            }else if(command == "print"){
-                BootKeyboard.print(argument);
+            if(strcmp(command_cstr, "write") == 0){
+                BootKeyboard.write(atoi(argument_cstr));
+            }else if(strcmp(command_cstr, "keycode") == 0){
+                BootKeyboard.write(KeyboardKeycode(atoi(argument_cstr)));
             }
 
             clear_parsed_commands();
         }
     }
 
-    delay(5);
+    delay(1);
 }
